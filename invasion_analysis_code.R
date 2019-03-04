@@ -1,6 +1,13 @@
-###Última actualización Enero 2019
-#ANÁLISIS DEL MODELO SIN APROXIMACIÓN CUADRÁTICA
-#Simulaciones con el modelo original
+
+#This code needs:
+#An object "lambdas" which is a matrix of lambdas with the years in the columns and the species in the rows. 
+#An object "alfas" which is a matrix of per capita competition coefients with the associated species in the columns and the focal species in the rows. 
+#An object "para" which is a vector with the values of parameter a of each focal species (Eq. 1 of the main text).
+#An object "parb" which is a vector with the values of parameter b of each focal species (Eq. 1 of the main text).
+
+#.............................................................................................................................#
+
+#Simulations with the orignal model 
 simorig=function(lambdas,alfas,para,parb,iter=10000,n0=999){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -18,7 +25,7 @@ simorig=function(lambdas,alfas,para,parb,iter=10000,n0=999){
 	sal
 }
 
-#calcula tasa de crecimiento de largo plazo y baja densidad para una especie j
+#Calculates long term, low-density population growth rates for a focal species.
 calcr0=function(lambdas,alfas,para,parb,n0,j,iter=2000000){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -41,7 +48,7 @@ calcr0=function(lambdas,alfas,para,parb,n0,j,iter=2000000){
 }
 
 
-#Hace lo que calcr0 para las 19 especies
+#Calculates long term, low-density population growth rates for all the focal species.
 invadiv=function(lambdas,alfas,para,parb){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -58,7 +65,10 @@ invadiv=function(lambdas,alfas,para,parb){
 }
 
 
-#Hace lo que calcr0 para las 19 especies, pero usando valores de a y b diferentes para la especie invasora.
+#Calculates long term, low-density population growth rates for all the focal species but changing the values of parameter a and parameter b for the focal species.
+#para2 was calculate as follows: 
+#para2 = para+parb*mean(log(lambdas))
+#parb2 = rep(0,19), 19 makes references to the number of focal species that we used in this study. 
 invadiv2=function(lambdas,alfas,para,parb,para2,parb2){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -76,11 +86,10 @@ invadiv2=function(lambdas,alfas,para,parb,para2,parb2){
 
 
 
-#################################################
-#ANÁLISIS DE LA APROXIMACIÓN CUADRÁTICA AL MODELO
+#.....................................................LINEAR APROXIMATION.........................................................#
 
+#Simulates the population dynamics for a focal species by using lineal aproximation. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters. Time series are in the rows and species identiy in the columns. 
 
-#simula la dinámica de la comunidad usando la aproximación lineal. Regresa Enes, que tiene los tamaños poblacionales de todas las especies, con las especies en las columnas y el tiempo en los renglones. Eboni y Cboni contienen los parametros ambiental y de competencia estandarizados y con aproximación lineal en el mismo formato.
 simulin=function(lambdas,alfas,para,parb,iter,n0){
 	lambdas=log(lambdas)
 	riq=dim(lambdas)[1]
@@ -106,8 +115,31 @@ simulin=function(lambdas,alfas,para,parb,iter,n0){
 	list("Enes"=Enes,"Eboni"=efE,"Cboni"=efC)
 }
 
+#This function does the same as simulin but now for each study species as invader. It returns the same objects (Enes, Cboni and Eboni) but now as arrays of iterations (after a burn-in).
+simulini=function(lambdas,alfas,para,parb,iter,tira){
+	riq=dim(alfas)[1]
+	enes=array(NA,dim=c(iter+tira,riq,riq))
+	eboni=enes
+	cboni=enes
+	for(i in 1:riq){
+		n0=rep(0.1,riq)
+		n0[i]=0
+		res=simulin(lambdas,alfas,para,parb,(iter+tira),n0)
+		enes[,,i]=res$Enes
+		eboni[,,i]=res$Eboni
+		cboni[,,i]=res$Cboni
+	}
+	enes=enes[-(1:tira),,]
+	eboni=eboni[-(1:tira),,]
+	cboni=cboni[-(1:tira),,]
+	list("Enes"=enes,"Eboni"=eboni,"Cboni"=cboni)
+}
 
-#simula la dinámica de la comunidad usando la aproximación cuadrática. Regresa Enes, que tiene los tamaños poblacionales de todas las especies, con las especies en las columnas y el tiempo en los renglones. Eboni y Cboni contienen los parametros ambiental y de competencia estandarizados y con aproximación cuadrática en el mismo formato.
+
+#.....................................................QUADRATIC APROXIMATION.........................................................#
+
+#Simulates the population dynamics for a focal species by using quadratic aproximation. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters. Time series are in the rows and species identity in the columns. 
+
 simucuad=function(lambdas,alfas,para,parb,iter,n0){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -133,27 +165,9 @@ simucuad=function(lambdas,alfas,para,parb,iter,n0){
 	list("Enes"=Enes,"Eboni"=efE,"Cboni"=efC)
 }
 
-#hace lo mismo que simulin, pero para todas las posibles especies como invasoras. Regresa los mismos objetos, pero ahora son arrays de iter iteraciones (después de un burn-in de tira ietarciones) POR especies POR cada especie como invasora.
-simulini=function(lambdas,alfas,para,parb,iter,tira){
-	riq=dim(alfas)[1]
-	enes=array(NA,dim=c(iter+tira,riq,riq))
-	eboni=enes
-	cboni=enes
-	for(i in 1:riq){
-		n0=rep(0.1,riq)
-		n0[i]=0
-		res=simulin(lambdas,alfas,para,parb,(iter+tira),n0)
-		enes[,,i]=res$Enes
-		eboni[,,i]=res$Eboni
-		cboni[,,i]=res$Cboni
-	}
-	enes=enes[-(1:tira),,]
-	eboni=eboni[-(1:tira),,]
-	cboni=cboni[-(1:tira),,]
-	list("Enes"=enes,"Eboni"=eboni,"Cboni"=cboni)
-}
 
-#como simulini, pero con aproximación cuadrática.
+
+#The same as simulini but now with the quadratic aproximation.
 simucuadi=function(lambdas,alfas,para,parb,iter,tira){
 	riq=dim(alfas)[1]
 	enes=array(NA,dim=c(iter+tira,riq,riq))
@@ -174,7 +188,7 @@ simucuadi=function(lambdas,alfas,para,parb,iter,tira){
 }
 
 
-#calcula los coeficientes q para todas las especies. Están contenidos en matq, que contiene en cada columna los valores de q para cada especie invasora. Adiocionalmente regresa Nast, que contiene los tamaños poblacionales en el equilibrio.
+#This function calculates coeficients q for all species. They are in matrix matq, that contains q values in each column for each invader species. It also returns Nast, that contains population sized at the equilibrium.
 calcq=function(lambdas,alfas,para,parb){
 	riq=dim(alfas)[1]
 	lambdas=log(lambdas)
