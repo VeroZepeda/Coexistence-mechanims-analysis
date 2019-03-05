@@ -5,9 +5,9 @@
 #An object "para" which is a vector with the values of parameter a of each focal species (Eq. 1 of the main text).
 #An object "parb" which is a vector with the values of parameter b of each focal species (Eq. 1 of the main text).
 
-#.............................................................................................................................#
+#...............................................Simulations with the original model....................................................#
 
-#Simulations with the orignal model 
+#Proyects population dynamics. 
 simorig=function(lambdas,alfas,para,parb,iter=10000,n0=999){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -188,7 +188,7 @@ simucuadi=function(lambdas,alfas,para,parb,iter,tira){
 }
 
 
-#This function calculates coeficients q for all species. They are in matrix matq, that contains q values in each column for each invader species. It also returns Nast, that contains population sized at the equilibrium.
+#This function calculates the weights qir (Eq. 5.26) for all species which are required to calculate deltaE, deltaC and deltaI. They are in matrix matq, that contains q values in each column for each invader species. It also returns Nast, that contains population sized at the equilibrium.
 calcq=function(lambdas,alfas,para,parb){
 	riq=dim(alfas)[1]
 	lambdas=log(lambdas)
@@ -216,6 +216,8 @@ calcq=function(lambdas,alfas,para,parb){
 	list("matq"=matq, "Nast"=Nast)
 }
 
+
+############
 eq18=function(lambdas,parb,lin,cuad){
 	riq=dim(lambdas)[1]
 	lambdas=log(lambdas)
@@ -231,6 +233,9 @@ eq18=function(lambdas,parb,lin,cuad){
 	ri	
 }
 
+#############
+
+#Decompouse log-term low density growth rate into the contributions of the different coexistence mechanisms (Eq. S5.19).
 eq19=function(lambdas,parb,lin,cuad,datq){
 	riq=dim(lambdas)[1]
 	lambdas=log(lambdas)
@@ -262,6 +267,8 @@ eq19=function(lambdas,parb,lin,cuad,datq){
 	
 	list("deltaE"=EspEi-EspEr,"deltaC"=EspCi-EspCr,"deltaI"=jii-jir,"ri"=EspEi-EspEr-(EspCi-EspCr)+jii-jir)
 }
+
+#Calculates matrix psi (Eq. S5.27) which allow us to estimate relative non-linearity. 
 
 calcpsi=function(lambdas,alfas,para,parb,datq){
 	riq=dim(alfas)[1]
@@ -296,7 +303,8 @@ calcpsi=function(lambdas,alfas,para,parb,datq){
 		}
 	PSI/2
 	}
-		
+
+#Estimates the contribution of relative non-inearity (Eq. S5.29). 		
 calcDN=function(datpsi,lin){
 	riq=dim(datpsi)[3]
 	DN=rep(NA,riq)
