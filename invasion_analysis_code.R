@@ -2,8 +2,8 @@
 #This code needs:
 #An object "lambdas" which is a matrix of lambdas with the years in the columns and the species in the rows. 
 #An object "alfas" which is a matrix of per capita competition coefients with the associated species in the columns and the focal species in the rows. 
-#An object "para" which is a vector with the values of parameter a of each focal species (Eq. 1 of the main text).
-#An object "parb" which is a vector with the values of parameter b of each focal species (Eq. 1 of the main text).
+#An object "para" which is a vector with the values of parameter a of each focal species (Eq. 1 of the main text, Eq. S5.6).
+#An object "parb" which is a vector with the values of parameter b of each focal species (Eq. 1 of the main text, Eq. S5.6).
 
 #...............................................Simulations with the original model....................................................#
 
@@ -115,7 +115,7 @@ simulin=function(lambdas,alfas,para,parb,iter,n0){
 	list("Enes"=Enes,"Eboni"=efE,"Cboni"=efC)
 }
 
-#This function does the same as simulin but now for each study species as invader. It returns the same objects (Enes, Cboni and Eboni) but now as arrays of iterations (after a burn-in).
+#Does the same as simulin but now for each study species as invader. It returns the same objects (Enes, Cboni and Eboni) but now as arrays of iterations (after a burn-in).
 simulini=function(lambdas,alfas,para,parb,iter,tira){
 	riq=dim(alfas)[1]
 	enes=array(NA,dim=c(iter+tira,riq,riq))
