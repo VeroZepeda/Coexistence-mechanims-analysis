@@ -90,7 +90,6 @@ invadiv2=function(lambdas,alfas,para,parb,para2,parb2){
 #.....................................................LINEAR APROXIMATION.........................................................#
 
 #Simulates the population dynamics for a focal species by using lineal aproximation for curly E and curly C. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters (curly E and curly C). Time series are in the rows and species identiy in the columns. 
-
 simulin=function(lambdas,alfas,para,parb,iter,n0){
 	lambdas=log(lambdas)
 	riq=dim(lambdas)[1]
@@ -140,7 +139,6 @@ simulini=function(lambdas,alfas,para,parb,iter,tira){
 #.....................................................QUADRATIC APROXIMATION.........................................................#
 
 #Simulates the population dynamics for a focal species by using quadratic aproximation for curly E and curly C. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters. Time series are in the rows and species identity in the columns. 
-
 simucuad=function(lambdas,alfas,para,parb,iter,n0){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -165,7 +163,6 @@ simucuad=function(lambdas,alfas,para,parb,iter,n0){
 	}
 	list("Enes"=Enes,"Eboni"=efE,"Cboni"=efC)
 }
-
 
 
 #The same as simulini but now with the quadratic aproximation.
@@ -219,7 +216,6 @@ calcq=function(lambdas,alfas,para,parb){
 
 
 
-
 #Decompose log-term, low density growth rate into the contributions of the different coexistence mechanisms (Eq. S5.19). datq are the wieghts (matq) obtained from the previous function. lin and cuad are the outputs of simulini and simucuadi.  The output of eq19 is a list with the vectors containing the contributions of different coexistence mechanisms for each species in the community. ri=log-term, low density growth rate.
 eq19=function(lambdas,parb,lin,cuad,datq){
 	riq=dim(lambdas)[1]
@@ -254,7 +250,6 @@ eq19=function(lambdas,parb,lin,cuad,datq){
 }
 
 #Calculates matrix psi (Eq. S5.27) which allow us to estimate relative non-linearity. 
-
 calcpsi=function(lambdas,alfas,para,parb,datq){
 	riq=dim(alfas)[1]
 	lambdas=log(lambdas)
@@ -289,6 +284,7 @@ calcpsi=function(lambdas,alfas,para,parb,datq){
 	PSI/2
 	}
 
+
 #Estimates the contribution of relative non-linearity for each species in the community (Eq. S5.29). 		
 calcDN=function(datpsi,lin){
 	riq=dim(datpsi)[3]
@@ -302,12 +298,10 @@ calcDN=function(datpsi,lin){
 
 
 #The following lines can be used to run the code and obtan the constributions of the coexistence mechanisms:
-
 lin=simulini(lambdas,alfas,para,parb,1000000,10000)
 cuad=simucuadi(lambdas,alfas,para,parb,1000000,10000)
 coefq=calcq(lambdas,alfas,para,parb)
 datpsi=calcpsi(lambdas,alfas,para,parb,coefq)
-
 deltas=eq19(lambdas,parb,lin,cuad,coefq)
 DN=calcDN(datpsi,lin)
 
