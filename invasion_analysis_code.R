@@ -1,13 +1,14 @@
-
+#In the comments we indicate some equation numbers. The equations can be found in Zepeda and Martorell (2019) Ecology.
 #This code needs:
 #An object "lambdas" which is a matrix of lambdas with the years in the columns and the species in the rows. 
 #An object "alfas" which is a matrix of per capita competition coefients with the associated species in the columns and the focal species in the rows. 
 #An object "para" which is a vector with the values of parameter a of each focal species (Eq. 1 of the main text, Eq. S5.6).
 #An object "parb" which is a vector with the values of parameter b of each focal species (Eq. 1 of the main text, Eq. S5.6).
 
-#...............................................Simulations with the original model....................................................#
+#................................Simulations with the original model (using Eq 1. in the main text).....................................#
 
-#Proyects population dynamics. 
+
+#Proyects population dynamics  of all species. This is the population growth model. iter= number of interations, n0=initial number of individuals, If n0 = 999, all species are initialized to 0,1 individuals.
 simorig=function(lambdas,alfas,para,parb,iter=10000,n0=999){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -25,7 +26,7 @@ simorig=function(lambdas,alfas,para,parb,iter=10000,n0=999){
 	sal
 }
 
-#Calculates long term, low-density population growth rates for a focal species.
+#Calculates long term, low-density population growth rates for a single focal species j.
 calcr0=function(lambdas,alfas,para,parb,n0,j,iter=2000000){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -48,7 +49,7 @@ calcr0=function(lambdas,alfas,para,parb,n0,j,iter=2000000){
 }
 
 
-#Calculates long term, low-density population growth rates for all the focal species.
+#Calculates long term, low-density population growth rates for all the species in the community.A burn-in of two thousand iterations is included. In case a species has been extincted during the transients but still can coexist with the rest in the stable state (seemingly does not occur), densities after the burn in are slightly increased to allow re-invasion 
 invadiv=function(lambdas,alfas,para,parb){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -57,7 +58,7 @@ invadiv=function(lambdas,alfas,para,parb){
 		nn=rep(0.1,riq)
 		nn[i]=0
 		sim=simorig(lambdas,alfas,para,parb,iter=2000,n0=nn)
-		nn=sim[,2000]+0.1
+		nn=sim[,2000]+0.01
 		nn[i]=0
 		sal[i,]=calcr0(lambdas,alfas,para,parb,nn,i,iter=2000000)
 	}
@@ -66,9 +67,9 @@ invadiv=function(lambdas,alfas,para,parb){
 
 
 #Calculates long term, low-density population growth rates for all the focal species but changing the values of parameter a and parameter b for the focal species.
-#para2 was calculate as follows: 
+#para2 was calculated as follows: 
 #para2 = para+parb*mean(log(lambdas))
-#parb2 = rep(0,19), 19 makes references to the number of focal species that we used in this study. 
+#parb2 = rep(0,riq), riq is the number of focal species. 
 invadiv2=function(lambdas,alfas,para,parb,para2,parb2){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -77,7 +78,7 @@ invadiv2=function(lambdas,alfas,para,parb,para2,parb2){
 		nn=rep(0.1,riq)
 		nn[i]=0
 		sim=simorig(lambdas,alfas,para,parb,iter=2000,n0=nn)
-		nn=sim[,2000]+0.1
+		nn=sim[,2000]+0.01
 		nn[i]=0
 		sal[i,]=calcr0(lambdas,alfas,para2,parb2,nn,i,iter=2000000)
 	}
@@ -88,7 +89,7 @@ invadiv2=function(lambdas,alfas,para,parb,para2,parb2){
 
 #.....................................................LINEAR APROXIMATION.........................................................#
 
-#Simulates the population dynamics for a focal species by using lineal aproximation. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters. Time series are in the rows and species identiy in the columns. 
+#Simulates the population dynamics for a focal species by using lineal aproximation for curly E and curly C. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters (curly E and curly C). Time series are in the rows and species identiy in the columns. 
 
 simulin=function(lambdas,alfas,para,parb,iter,n0){
 	lambdas=log(lambdas)
@@ -115,7 +116,7 @@ simulin=function(lambdas,alfas,para,parb,iter,n0){
 	list("Enes"=Enes,"Eboni"=efE,"Cboni"=efC)
 }
 
-#Does the same as simulin but now for each study species as invader. It returns the same objects (Enes, Cboni and Eboni) but now as arrays of iterations (after a burn-in).
+#Does the same as simulin but now for each study species as invader. It returns the same objects (Enes, Cboni and Eboni) but now as arrays of iterations (after a burn-in). Species (invaders) constitute the third dimension of the arrays. tira= Burn-in interations.
 simulini=function(lambdas,alfas,para,parb,iter,tira){
 	riq=dim(alfas)[1]
 	enes=array(NA,dim=c(iter+tira,riq,riq))
