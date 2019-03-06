@@ -2,8 +2,8 @@
 #This code needs:
 #An object "lambdas" which is a matrix of lambdas with the years in the columns and the species in the rows. 
 #An object "alfas" which is a matrix of per capita competition coefients with the associated species in the columns and the focal species in the rows. 
-#An object "para" which is a vector with the values of parameter a of each focal species (Eq. 1 of the main text, Eq. S5.6).
-#An object "parb" which is a vector with the values of parameter b of each focal species (Eq. 1 of the main text, Eq. S5.6).
+#An object "para" which is a vector with the values of parameter a of each focal species (Eq. 1 of the main text).
+#An object "parb" which is a vector with the values of parameter b of each focal species (Eq. 1 of the main text).
 
 #................................Simulations with the original model (using Eq 1. in the main text).....................................#
 
