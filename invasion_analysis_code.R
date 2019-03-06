@@ -8,7 +8,7 @@
 #................................Simulations with the original model (using Eq 1. in the main text).....................................#
 
 
-#Proyects population dynamics  of all species. This is the population growth model. iter= number of iterations, n0=initial number of individuals, If n0 = 999, all species are initialized to 0,1 individuals.
+#Proyects population dynamics for all species. This is the population growth model. iter= number of iterations, n0=initial number of individuals. If n0 = 999, all species are initialized to 0.1 individuals.
 simorig=function(lambdas,alfas,para,parb,iter=10000,n0=999){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -49,7 +49,7 @@ calcr0=function(lambdas,alfas,para,parb,n0,j,iter=2000000){
 }
 
 
-#Calculates long term, low-density population growth rates for all the species in the community.A burn-in of two thousand iterations is included. In case a species has been extincted during the transients but still can coexist with the rest in the stable state (seemingly does not occur), densities after the burn in are slightly increased to allow re-invasion 
+#Calculates long term, low-density population growth rates for all the species in the community.A burn-in of two thousand iterations is included. In case a species has become extinct during the transients but still can coexist with the rest in the stable state (seemingly does not occur), densities after the burn-in are slightly increased to allow re-invasion. 
 invadiv=function(lambdas,alfas,para,parb){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -87,9 +87,9 @@ invadiv2=function(lambdas,alfas,para,parb,para2,parb2){
 
 
 
-#.....................................................LINEAR APROXIMATION.........................................................#
+#.....................................................LINEAR APPROXIMATION.........................................................#
 
-#Simulates the population dynamics for a focal species by using lineal aproximation for curly E and curly C. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters (curly E and curly C). Time series are in the rows and species identiy in the columns. 
+#Simulates the population dynamics for a focal species by using lineal approximation for curly E and curly C. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters (curly E and curly C). Time series are in the rows and species identiy in the columns. 
 simulin=function(lambdas,alfas,para,parb,iter,n0){
 	lambdas=log(lambdas)
 	riq=dim(lambdas)[1]
@@ -136,9 +136,9 @@ simulini=function(lambdas,alfas,para,parb,iter,tira){
 }
 
 
-#.....................................................QUADRATIC APROXIMATION.........................................................#
+#.....................................................QUADRATIC APPROXIMATION............................................................#
 
-#Simulates the population dynamics for a focal species by using quadratic aproximation for curly E and curly C. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters. Time series are in the rows and species identity in the columns. 
+#Simulates the population dynamics for a focal species by using quadratic approximation for curly E and curly C. It returns Enes, that contains population sizes of all study species, Eboni and Cboni that are the environmental and competiton standarized parameters. Time series are in the rows and species identity in the columns. 
 simucuad=function(lambdas,alfas,para,parb,iter,n0){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
@@ -165,7 +165,7 @@ simucuad=function(lambdas,alfas,para,parb,iter,n0){
 }
 
 
-#The same as simulini but now with the quadratic aproximation.
+#The same as simulini but now with the quadratic approximation.
 simucuadi=function(lambdas,alfas,para,parb,iter,tira){
 	riq=dim(alfas)[1]
 	enes=array(NA,dim=c(iter+tira,riq,riq))
@@ -215,8 +215,7 @@ calcq=function(lambdas,alfas,para,parb){
 }
 
 
-
-#Decompose log-term, low density growth rate into the contributions of the different coexistence mechanisms (Eq. S5.19). datq are the wieghts (matq) obtained from the previous function. lin and cuad are the outputs of simulini and simucuadi.  The output of eq19 is a list with the vectors containing the contributions of different coexistence mechanisms for each species in the community. ri=log-term, low density growth rate.
+#Decomposes log-term, low density growth rate into the contributions of the different coexistence mechanisms (Eq. S5.19). datq are the weights (matq) obtained from the previous function. lin and cuad are the outputs of simulini and simucuadi.  The output of eq19 is a list with the vectors containing the contributions of different coexistence mechanisms for each species in the community. ri=log-term, low density growth rate.
 eq19=function(lambdas,parb,lin,cuad,datq){
 	riq=dim(lambdas)[1]
 	lambdas=log(lambdas)
@@ -297,7 +296,7 @@ calcDN=function(datpsi,lin){
 }
 
 
-#The following lines can be used to run the code and obtan the constributions of the coexistence mechanisms:
+#The following lines can be used to run the code and obtain the constributions of the coexistence mechanisms:
 lin=simulini(lambdas,alfas,para,parb,1000000,10000)
 cuad=simucuadi(lambdas,alfas,para,parb,1000000,10000)
 coefq=calcq(lambdas,alfas,para,parb)
