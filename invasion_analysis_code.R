@@ -70,17 +70,22 @@ invadiv=function(lambdas,alfas,para,parb){
 #para2 was calculated as follows: 
 #para2 = para+parb*mean(log(lambdas))
 #parb2 = rep(0,riq), riq is the number of focal species. 
-invadiv2=function(lambdas,alfas,para,parb,para2,parb2){
+
+invadiv2=function(lambdas,alfas,para,parb,para2,parb2,iter1,iter2){
 	riq=dim(lambdas)[1]
 	nyr=dim(lambdas)[2]
-	sal=matrix(NA,nrow=riq,ncol=2000000)
+	sal=matrix(NA,nrow=riq,ncol=iter1)
 	for(i in 1:riq){
 		nn=rep(0.1,riq)
 		nn[i]=0
-		sim=simorig(lambdas,alfas,para,parb,iter=2000,n0=nn)
-		nn=sim[,2000]+0.01
+		parau=para
+		parbu=parb
+		parau[i]=para2[i]
+		parbu[i]=parb2[i]
+		sim=simorig(lambdas,alfas,parau,parbu,iter=iter2,n0=nn)
+		nn=sim[,iter2]+0.1
 		nn[i]=0
-		sal[i,]=calcr0(lambdas,alfas,para2,parb2,nn,i,iter=2000000)
+		sal[i,]=calcr0(lambdas,alfas,parau,parbu,nn,i,iter=iter1)
 	}
 	sal
 }
