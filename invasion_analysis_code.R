@@ -83,7 +83,7 @@ invadiv2=function(lambdas,alfas,para,parb,para2,parb2,iter1,iter2){
 		parau[i]=para2[i]
 		parbu[i]=parb2[i]
 		sim=simorig(lambdas,alfas,parau,parbu,iter=iter2,n0=nn)
-		nn=sim[,iter2]+0.1
+		nn=sim[,iter2]+0.01
 		nn[i]=0
 		sal[i,]=calcr0(lambdas,alfas,parau,parbu,nn,i,iter=iter1)
 	}
